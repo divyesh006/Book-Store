@@ -64,7 +64,16 @@ const Book = () => {
     { id: "price", label: "Price", minWidth: 100 },
     { id: "category", label: "Category", minWidth: 100 },
   ];
-
+  /*const onConfirmDelete = () => {
+    bookService
+      .deleteBook(selectedId)
+      .then((res) => {
+        toast.success(Shared.messages.DELETE_SUCCESS);
+        setOpen(false);
+        setFilters({ ...filters, pageIndex: 1 });
+      })
+      .catch((e) => toast.error(Shared.messages.DELETE_FAIL));
+  };*/
 
 
   return (
@@ -177,7 +186,7 @@ const Book = () => {
         <ConfirmationDialog
           open={open}
           onClose={() => setOpen(false)}
-          //onConfirm={() => onConfirmDelete()}
+         // onConfirm={() => onConfirmDelete()}
           title="Delete book"
           description="Are you sure you want to delete this book?"
         />

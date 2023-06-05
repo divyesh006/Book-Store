@@ -7,6 +7,8 @@ import Login from "../pages/Login";
 import Register from "../pages/register";
 import BookList from "../pages/book-listing/index";
 import Book from "../pages/book";
+import UpdateProfile from "../pages/update-profile/index";
+import EditBook from "../pages/book/editBook";
 
 
 const AppRoutes = () => {
@@ -31,6 +33,21 @@ const AppRoutes = () => {
         exact
         path={RoutePaths.Book}
         element={authContext.user.id ? <Book /> : Redirect}
+      />
+     <Route
+        exact
+        path={RoutePaths.UpdateProfile}
+        element={authContext.user.id ? <UpdateProfile /> : Redirect}
+      />
+      <Route
+        exact
+        path={RoutePaths.EditBook}
+        element={authContext.user.id ? <EditBook /> : Redirect}
+      />
+      <Route
+        exact
+        path={RoutePaths.AddBook}
+        element={authContext.user.id ? <EditBook /> : Redirect}
       />
 
     </Routes>

@@ -12,14 +12,16 @@ const productStyle = makeStyles((theme) => ({
     },
     /*"& .table" : {
         background: "rgba(255, 255, 255, 0.1)",
+        padding: "10px",
+        marginBottom: "10px",
           boxShadow: "4px 4px 10px 4px rgba(0, 0, 0, 0.3)",
           backdropFilter: "blur(20px)",
-          borderRadius: "15px",
+          //borderRadius: "15px",
           perspective: "1000px",
           transformStyle: "preserve-3d",
           transition: "box-shadow 0.3s ease-in-out",
           "&:hover": {
-            boxShadow: "6px 6px 20px 6px rgba(0, 0, 0, 1)",
+            boxShadow: "6px 6px 20px 6px rgba(0, 0, 0, 0.4)",
           },
     },*/
     "& .btn-wrapper": {
