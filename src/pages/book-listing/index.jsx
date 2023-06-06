@@ -75,14 +75,22 @@ const BookList = () => {
   }, [categories, bookResponse]);
 
   const addToCart = (book) => {
-    Shared.addToCart(book, authContext.user.id).then((res) => {
-      if (res.error) {
-        toast.error(res.message);
-      } else {
-        toast.success(res.message);
-        cartContext.updateCart();
-      }
-    });
+    const existingCartItem = cartContext.cartData.find(
+      (item) => item.book.id === book.id
+    );
+
+    if (existingCartItem) {
+      toast.info("This book is already in your cart");
+    } else {
+      Shared.addToCart(book, authContext.user.id).then((res) => {
+        if (res.error) {
+          toast.error(res.message);
+        } else {
+          toast.success(res.message);
+          cartContext.updateCart();
+        }
+      });
+    }
   };
 
   const sortBooks = (e) => {
@@ -165,12 +173,19 @@ const BookList = () => {
                         MRP &#8377; {book.price}
                       </span>
                     </p>
-                    <button className="MuiButtonBase-root MuiButton-root MuiButton-contained btn pink-btn MuiButton-containedPrimary MuiButton-disableElevation">
-                      <span
-                        className="MuiButton-label"
-                        onClick={() => addToCart(book)}
-                      >
-                        ADD TO CART
+                    <button
+                      className="MuiButtonBase-root MuiButton-root MuiButton-contained btn pink-btn MuiButton-containedPrimary MuiButton-disableElevation"
+                      disabled={cartContext.cartData.some(
+                        (item) => item.book.id === book.id
+                      )}
+                      onClick={() => addToCart(book)}
+                    >
+                      <span className="MuiButton-label">
+                        {cartContext.cartData.some(
+                          (item) => item.book.id === book.id
+                        )
+                          ? "Already Added"
+                          : "Add to Cart"}
                       </span>
                       <span className="MuiTouchRipple-root"></span>
                     </button>

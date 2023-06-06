@@ -9,6 +9,7 @@ import BookList from "../pages/book-listing/index";
 import Book from "../pages/book";
 import UpdateProfile from "../pages/update-profile/index";
 import EditBook from "../pages/book/editBook";
+import Cart from "../pages/cart";
 
 
 const AppRoutes = () => {
@@ -49,7 +50,11 @@ const AppRoutes = () => {
         path={RoutePaths.AddBook}
         element={authContext.user.id ? <EditBook /> : Redirect}
       />
-
+       <Route
+        exact
+        path={RoutePaths.Cart}
+        element={authContext.user.id ? <Cart /> : Redirect}
+      />
     </Routes>
   );
 };
