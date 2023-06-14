@@ -1,4 +1,5 @@
 import React from "react";
+import { Provider } from "react-redux";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { theme } from "./utils/theme";
 import "./assets/css/style.css";
@@ -11,11 +12,13 @@ import MainNavigation from "./components/MainNavigation";
 import { AuthWrapper } from "./context/auth";
 import loader from "../src/assets/images/loader.gif";
 import { CartWrapper } from "./context/cart";
+import store from "./State/store";
 
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <React.Suspense fallback={<></>}>
+      <Provider store={store}>
         <BrowserRouter>
           <AuthWrapper>
             <CartWrapper>
@@ -33,6 +36,7 @@ const App = () => {
             </CartWrapper>
           </AuthWrapper>
         </BrowserRouter>
+        </Provider>
       </React.Suspense>
     </ThemeProvider>
   );

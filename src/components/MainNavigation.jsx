@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-import { useAuthContext } from "../context/auth";
-import { RoutePaths } from "../utils/enum";
+//import { useAuthContext } from "../context/auth";
+//import { RoutePaths } from "../utils/enum";
 
 import Login from "../pages/Login";
 import Register from "../pages/register";
@@ -10,17 +10,15 @@ import Book from "../pages/book";
 import UpdateProfile from "../pages/update-profile/index";
 import EditBook from "../pages/book/editBook";
 import Cart from "../pages/cart";
-
+import { useSelector } from "react-redux";
 
 const AppRoutes = () => {
-  const authContext = useAuthContext();
+  const authData = useSelector((state) => state.auth.user);
+  const Redirect = <Navigate to={"/login"} />;
 
-  const Redirect = <Navigate to={RoutePaths.Login} />;
 
   return (
-    <Routes>
-      <Route exact path={RoutePaths.Login} element={<Login />} />
-      <Route
+    /* <Route
         exact
         path={RoutePaths.Register}
         element={!authContext.user.id ? <Register /> : Redirect}
@@ -39,21 +37,37 @@ const AppRoutes = () => {
         exact
         path={RoutePaths.UpdateProfile}
         element={authContext.user.id ? <UpdateProfile /> : Redirect}
+      />*/
+    <Routes>
+   
+      <Route path="/login" element={<Login />} />
+      <Route
+         path="/register"
+         element={!authData.id ? <Register /> : Redirect}
       />
       <Route
-        exact
-        path={RoutePaths.EditBook}
-        element={authContext.user.id ? <EditBook /> : Redirect}
-      />
-      <Route
-        exact
-        path={RoutePaths.AddBook}
-        element={authContext.user.id ? <EditBook /> : Redirect}
+        path="/"
+        element={!authData.id  ? <BookList /> : Redirect}
       />
        <Route
-        exact
-        path={RoutePaths.Cart}
-        element={authContext.user.id ? <Cart /> : Redirect}
+        path= "/Book"
+        element={!authData.id  ? <Book /> : Redirect}
+      />
+     <Route
+        path= "/UpdateProfile"
+        element={!authData.id  ? <UpdateProfile /> : Redirect}
+      />
+      <Route        
+        path= "/EditBook"
+        element={!authData.id  ? <EditBook /> : Redirect}
+      />
+      <Route       
+        path= "/AddBook"
+        element={!authData.id  ? <EditBook /> : Redirect}
+      />
+       <Route     
+        path="/Cart"
+        element={!authData.id ? <Cart /> : Redirect}
       />
     </Routes>
   );

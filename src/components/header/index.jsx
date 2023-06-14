@@ -15,6 +15,9 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import bookService from "../../service/book.service";
 import { useCartContext } from "../../context/cart";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCartData } from "../../State/Slice/cartSlice";
+import { signOut } from "../../State/Slice/authSlice";
 
 const Header = () => {
   const classes = headerStyle();
@@ -27,6 +30,9 @@ const Header = () => {
   const [openSearchResult, setOpenSearchResult] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const cartData = useSelector((state) => state.cart.cartData);
+  const authData = useSelector((state) => state.auth.user);
 
   // for mobile menu
   const openMenu = () => {
@@ -38,11 +44,10 @@ const Header = () => {
       (item) =>
         !item.access.length || item.access.includes(authContext.user.roleId)
     );
-  }, [authContext.user]);
+  }, [authData]);
 
   const logOut = () => {
-    authContext.signOut();
-    cartContext.emptyCart();
+    dispatch(signOut());
   };
 
   const searchBook = async () => {
@@ -56,19 +61,25 @@ const Header = () => {
     setOpenSearchResult(true);
   };
 
-  const addToCart = (book) => {
-    if (!authContext.user.id) {
-      navigate(RoutePaths.Login);
+ const addToCart = (book) => {
+    if (!authData.id) {
+      navigate("/login");
       toast.error("Please login before adding books to cart");
     } else {
-      Shared.addToCart(book, authContext.user.id).then((res) => {
-        if (res.error) {
-          toast.error(res.error);
-        } else {
-          toast.success("Item added in cart");
-          cartContext.updateCart();
-        }
-      });
+      Shared
+        .addToCart(book, authData.id)
+        .then((res) => {
+          if (res.error) {
+            toast.error(res.error);
+          } else {
+            toast.success("Item added in cart");
+            // cartContext.updateCart();
+            dispatch(fetchCartData(authData.id));
+          }
+        })
+        .catch((err) => {
+          toast.warning(err);
+        });
     }
   };
 

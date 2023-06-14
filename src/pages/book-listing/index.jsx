@@ -18,6 +18,10 @@ import { useCartContext } from "../../context/cart";
 import { defaultFilter } from "../../constant/constant";
 import bookService from "../../service/book.service";
 import categoryService from "../../service/category.service";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCartData } from "../../State/Slice/cartSlice";
+
+
 
 const BookList = () => {
   const authContext = useAuthContext();
@@ -34,6 +38,8 @@ const BookList = () => {
   const [categories, setCategories] = useState([]);
   const [sortBy, setSortBy] = useState();
   const [filters, setFilters] = useState(defaultFilter);
+  const authData = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getAllCategories();
@@ -75,37 +81,30 @@ const BookList = () => {
   }, [categories, bookResponse]);
 
   const addToCart = (book) => {
-    const existingCartItem = cartContext.cartData.find(
-      (item) => item.book.id === book.id
-    );
-
-    if (existingCartItem) {
-      toast.info("This book is already in your cart");
-    } else {
-      Shared.addToCart(book, authContext.user.id).then((res) => {
+    Shared
+      .addToCart(book, authData.id)
+      .then((res) => {
         if (res.error) {
           toast.error(res.message);
         } else {
           toast.success(res.message);
-          cartContext.updateCart();
+          dispatch(fetchCartData(authData.id));
+          // dispatch(addtoCart(book)); // Dispatch the addToCart action
         }
+      })
+      .catch((err) => {
+        toast.warning(err);
       });
-    }
   };
-
   const sortBooks = (e) => {
     setSortBy(e.target.value);
-    const bookList = [...bookResponse.items];
-
-    bookList.sort((a, b) => {
-      if (a.name < b.name) {
-        return e.target.value === "a-z" ? -1 : 1;
-      }
-      if (a.name > b.name) {
-        return e.target.value === "a-z" ? 1 : -1;
-      }
-      return 0;
-    });
+    let bookList = [...bookResponse.items];
+    if (e.target.value === "a-z") {
+      bookList.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (e.target.value === "z-a") {
+      bookList.sort((a, b) => b.name.localeCompare(a.name));
+    }
     setBookResponse({ ...bookResponse, items: bookList });
   };
 

@@ -12,12 +12,16 @@ import userService from "../../service/user.service";
 import { toast } from "react-toastify";
 import Shared from "../../utils/shared";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../State/Slice/authSlice";
 
 const UpdateProfile = () => {
-  const authContext = useAuthContext();
+  //const authContext = useAuthContext();
   const classes = editStyle();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const authData = useSelector((state) => state.auth.user);
 
   const initialValueState = {
     email: user.email,
@@ -45,13 +49,17 @@ const UpdateProfile = () => {
   });
 
   const onSubmit = async (values) => {
-    const password = values.newPassword ? values.newPassword : user.password;
+    const password = values.newPassword ? values.newPassword : authData.password;
     delete values.confirmPassword;
     delete values.newPassword;
-    const data = Object.assign(user, { ...values, password });
-    const res = await userService.updateProfile(data);
+    const updatedData = {
+      ...authData,
+      ...values,
+      password,
+    };
+    const res = await userService.updateProfile(updatedData);
     if (res) {
-      authContext.setUser(res);
+      dispatch(setUser(res));
       toast.success(Shared.messages.UPDATED_SUCCESS);
       navigate("/");
     }

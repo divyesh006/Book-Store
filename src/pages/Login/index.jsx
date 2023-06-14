@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { loginStyle } from "./style";
 import {
   Breadcrumbs,
@@ -9,22 +9,47 @@ import {
   Button,
   TextField,
 } from "@material-ui/core";
-import { useNavigate } from "react-router-dom";
+import { useLocation,useNavigate } from "react-router-dom";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import ValidationErrorMessage from "../../components/ValidationErrorMessage";
 import authService from "../../service/auth.service";
 import { toast } from "react-toastify";
-import { useAuthContext } from "../../context/auth";
+//import { useAuthContext } from "../../context/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../../State/Slice/authSlice";
+import Shared from "../../utils/shared";
 
 const Login = () => {
   const classes = loginStyle();
   const navigate = useNavigate();
-  const authContext = useAuthContext();
+  //const authContext = useAuthContext();
+  const { pathname } = useLocation();
+  const authData = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
+
+
+  useEffect(() => {
+    const str = JSON.parse(localStorage.getItem("user"));
+    if (str?.id) {
+      dispatch(setUser(str));
+      navigate("/");
+    }
+    const access = Shared.hasAccess(pathname, authData);
+    if (!access) {
+      toast.warning("sorry, you are not authorized to access this page");
+      navigate("/");
+      return;
+    }
+  }, []);
+
+
   const initialValues = {
     email: "",
     password: "",
   };
+  
+
   const validationSchema = Yup.object().shape({
     email: Yup.string()
       .email("Invalid email address format")
@@ -38,9 +63,13 @@ const Login = () => {
     authService.login(values).then((res) => {
       delete res._id;
       delete res.__v;
-      authContext.setUser(res);
+          /*authContext.setUser(res);*/
+      dispatch(setUser(res));
       navigate("/");
       toast.success("Successfully logged in");
+    })
+    .catch((err) => {
+      console.log(err);
     });
   };
   return (
